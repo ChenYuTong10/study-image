@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>breakpoint</title>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.26.1/axios.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>Choose a file:</h2>
+		<input
+			type="file"
+			name="me"
+			id="file-input"
+		/>
+		<!-- Delete the 'accept' property to test any type file -->
+	</div>
+</body>
+<script type="text/javascript">
+	const url = "http://localhost:9090/";
+	const input = document.getElementById("file-input");
+
+	input.onchange = async function OnChange(e) {
+		// get upload file
+		let file = input.files[0];
+
+		// send request with file
+		const result = await SendRequest(file);
+
+		console.log(result);
+	}
+
+	function SendRequest(file) {
+		const form = new FormData();
+		form.append("file", file);
+
+		return axios.post(`${url}upload`, form, {
+			headers: {
+				"Content-Type": "multipart/form-data"
+			}
+		});
+	}
+</script>
+</html>
