@@ -24,7 +24,7 @@ CREATE TABLE t_base64_image
 
 ## Frontend
 
-The frontend code is in [index.html](https://github.com/ChenYuTong10/study-image/base64/index.html).
+The frontend code is in [index.html](https://github.com/ChenYuTong10/study-image/store/base64/index.html).
 
 When the user upload an image, the **change** event will be triggered. It will
 get the upload file, encode the image and send request.
@@ -33,7 +33,7 @@ When you want to show the image, you only need to get the base64 encoding of ima
 
 ## Backend
 
-The backend code is in [main.go](https://github.com/ChenYuTong10/study-image/base64/main.go)
+The backend code is in [main.go](https://github.com/ChenYuTong10/study-image/store/base64/main.go)
 
 When the upload request come, the backend will get the image name and its code.
 Next, both of them will be stored in the database.

@@ -23,7 +23,7 @@ CREATE TABLE t_url_image
 
 ## Frontend
 
-The frontend code is in [index.html](https://github.com/ChenYuTong10/study-image/url/index.html).
+The frontend code is in [index.html](https://github.com/ChenYuTong10/study-image/store/url/index.html).
 
 When the user upload an image, the **change** event will be triggered. It will
 get the upload file and send request directly.
@@ -34,7 +34,7 @@ So you can access the image through the path.
 
 ## Backend
 
-The backend code is in [main.go](https://github.com/ChenYuTong10/study-image/url/main.go)
+The backend code is in [main.go](https://github.com/ChenYuTong10/study-image/store/url/main.go)
 
 As you see, the backend use the file server to realize the access of image. You can also use the 
 function `http.ServeFile`.
