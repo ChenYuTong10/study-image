@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>url</title>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.26.1/axios.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>Choose an image:</h2>
+		<input
+			type="file"
+			name="me"
+			id="image-input"
+			accept="image/png, image/jpeg"
+		/>
+		<img id="image-display" alt="image" src="">
+	</div>
+</body>
+<script type="text/javascript">
+	const url = "http://localhost:9090/";
+	const input = document.getElementById("image-input");
+	const img = document.getElementById("image-display");
+
+	input.onchange = async function OnChange(e) {
+		// get upload image
+		let image = input.files[0];
+
+		// send request with image
+		const result = await SendRequest(image);
+
+		// display the image
+		if(result.status === 200) {
+			img.src = `${url}${result.data}`;
+		}
+	}
+
+	function SendRequest(image) {
+		const form = new FormData();
+		form.append("image", image);
+
+		return axios.post(`${url}upload`, form, {
+			headers: {
+				"Content-Type": "multipart/form-data"
+			}
+		});
+	}
+</script>
+</html>

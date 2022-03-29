@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>base64</title>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.26.1/axios.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>Choose an image:</h2>
+		<input
+			type="file"
+			id="image-input"
+			accept="image/png, image/jpeg"
+		/>
+		<img id="image-display" alt="image" src="">
+	</div>
+</body>
+<script type="text/javascript">
+	const url = "http://localhost:9090/";
+	const input = document.getElementById("image-input");
+	const img = document.getElementById("image-display");
+
+	input.onchange = async function OnChange(e) {
+		// get upload image
+		let image = input.files[0];
+
+		// encode image with base64
+		const code = await EncodeImage(image);
+
+		// send request with image name and its code
+		const result = await SendRequest(image.name, code);
+
+		if(result.status === 200) {
+			img.src = code;
+		}
+	}
+
+	function EncodeImage(image) {
+		return new Promise((resolve, reject)=>{
+			let reader = new FileReader();
+			reader.readAsDataURL(image);
+			reader.onload = function(e) {
+				resolve(e.target.result);
+			};
+		})
+		.catch(error=>{
+			console.log(error);
+		});
+	}
+
+	function SendRequest(name, code) {
+		const form = new FormData();
+		form.append("name", name);
+		form.append("code", code);
+
+		return axios.post(`${url}upload`, form, {
+			headers: {
+				"Content-Type": "multipart/form-data"
+			}
+		});
+	}
+</script>
+</html>
