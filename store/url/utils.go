@@ -29,9 +29,9 @@ const (
 	// "machineId"左移的位数为17位
 	// "dataId"左移的位数位12位
 
-	maxMachineId = int64(1 << machineIdBits) // 最大的区域节点Id
-	maxDataId    = int64(1 << dataIdBits)    // 最大的数据中心Id
-	maxSerialId  = int64(1 << serialIdBits)  // 最大的序列号
+	maxMachineId = int64(-1 ^ (-1 << machineIdBits)) // 最大的区域节点Id
+	maxDataId    = int64(-1 ^ (-1 << dataIdBits))    // 最大的数据中心Id
+	maxSerialId  = int64(-1 ^ (-1 << serialIdBits))  // 最大的序列号
 )
 
 // getUniqueId 生成全局唯一Id

@@ -31,7 +31,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 	// insert into the database
 	sql := `
-		INSERT INTO t_base64_image
+		INSERT INTO base64_store_image
 		(name, code)
 		VALUES
 		(?, ?);

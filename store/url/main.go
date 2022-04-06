@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"io"
@@ -9,12 +10,19 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"time"
 )
 
 var (
 	conn 	*sql.DB
 	rootPath string
 )
+
+type resp struct {
+	StatusCode int64  `json:"statusCode"`
+	Message    string `json:"message"`
+	Delay      string `json:"delay"`
+}
 
 func init() {
 	// connect the database
@@ -32,6 +40,9 @@ func init() {
 }
 
 func upload(w http.ResponseWriter, r *http.Request) {
+	// time tick
+	startTime := time.Now()
+
 	// set cors header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -68,7 +79,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 	// insert into the database
 	sql := `
-		INSERT INTO t_url_image
+		INSERT INTO url_store_image
 		(path)
 		VALUES
 		(?);
@@ -79,7 +90,14 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "db fail", http.StatusInternalServerError)
 		return
 	}
-	w.Write([]byte(imageName))
+
+	// get the delay of the interface
+	delay := fmt.Sprintf("%s", time.Since(startTime))
+
+	// json serialize
+	strResp, _ := json.Marshal(&resp{StatusCode: 2000, Message: imageName, Delay: delay})
+
+	w.Write(strResp)
 }
 
 func staticFileServer() http.Handler {

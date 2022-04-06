@@ -13,7 +13,7 @@ The following code is the ddl of the database.
 ```SQL
 /* mysql  Ver 8.0.27 for Linux on x86_64 (MySQL Community Server - GPL) */
 
-CREATE TABLE t_url_image
+CREATE TABLE url_store_image
 (
     id INTEGER auto_increment,
     path VARCHAR(100),
