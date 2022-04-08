@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>second transmit</title>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.26.1/axios.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/spark-md5/3.0.2/spark-md5.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>Choose an image:</h2>
+		<input
+			type="file"
+			name="me"
+			id="image-input"
+			accept="image/png, image/jpeg"
+		/>
+		<img id="image-display" alt="image" src="">
+	</div>
+</body>
+<script type="text/javascript">
+	const url = "http://localhost:9090/";
+	const input = document.getElementById("image-input");
+	const img = document.getElementById("image-display");
+
+	input.onchange = async function OnChange(e) {
+		// get upload image
+		let image = input.files[0];
+
+		// get md5 of the image
+		const md5 = await GetImageMd5(image);
+
+		// check the image whether it is exist on server
+		let result = await CheckImage(md5);
+		
+		if(result.data === "no") {
+			// no same image on server, so we need to upload image
+			result = await UploadImage(md5, image);
+
+			// display the image
+			if(result.status === 200) {
+				img.src = `${url}${result.data}`;
+			}
+
+			return
+		}
+
+		// if the image has exist, diplay the image directly
+		img.src = `${url}${result.data}`;
+	}
+
+	function GetImageMd5(image) {
+		return new Promise(resolve => {
+			// read image
+			const reader = new FileReader();
+			reader.readAsBinaryString(image);
+			reader.onload = (e) => {
+				// calculate the md5 of the image
+				const spark = new SparkMD5();
+				spark.appendBinary(e.target.result);
+				resolve(spark.end());
+			};
+		});
+	}
+
+	function CheckImage(md5) {
+		const form = new FormData();
+		form.append("md5", md5);
+
+		return axios.post(`${url}check`, form);
+	}
+
+	function UploadImage(md5, image) {
+		const form = new FormData();
+		form.append("md5", md5);
+		form.append("image", image);
+
+		return axios.post(`${url}upload`, form, {
+			headers: {
+				"Content-Type": "multipart/form-data"
+			}
+		});
+	}
+</script>
+</html>
