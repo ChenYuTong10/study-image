@@ -25,8 +25,11 @@ CREATE TABLE url_store_image
 
 The frontend code is in [index.html](https://github.com/ChenYuTong10/study-image/blob/master/store/url/index.html).
 
-When the user upload an image, the **change** event will be triggered. It will
-get the upload file and send request directly.
+When the user upload an image, the **change** event will be triggered. It will get the upload file and send request directly.
+
+> Most of time, the image is large.
+> So it is common to compress the image instead of sending request directly. 
+> Function named `CompressImage` in the example shows how to using `cavans` to compress the image.
 
 When you want to show the image, you need to get the path of it on the server.
 In the example, when the server handle image successfully, it will give back the path.
