@@ -32,7 +32,7 @@
 		// send request with image name and its code
 		const result = await SendRequest(image.name, code);
 
-		if(result.status === 200) {
+		if(result.data.statusCode === 2000) {
 			img.src = code;
 		}
 	}
