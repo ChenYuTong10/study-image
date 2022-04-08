@@ -27,6 +27,9 @@
 		// get upload image
 		let image = input.files[0];
 
+		// compress the image
+		image = await CompressImage(image);
+
 		// send request with image
 		const result = await SendRequest(image);
 
@@ -34,6 +37,69 @@
 		if(result.status === 200) {
 			img.src = `${url}${result.data.message}`;
 		}
+	}
+
+	function CompressImage(image) {
+		const type = image.type;
+		const name = image.name;
+		const size = parseInt(image.size / 2**20);
+
+		const reader = new FileReader();
+		reader.readAsDataURL(image);
+
+		return new Promise(resolve => {
+			reader.onload = function(e) {
+				const img = new Image();
+				img.src = e.target.result;
+
+				img.onload = function() {
+					// `this` refer to the `img` element
+					// you can use `img` variable to instead
+					const ratio = this.width / this.height;
+					const w = ratio * this.width ;
+					const h = ratio * this.height;
+
+					const canvas = document.createElement("canvas");
+					canvas.setAttribute("width", w);
+					canvas.setAttribute("height", h);
+					canvas.getContext("2d").drawImage(this, 0, 0, w, h);
+
+					// compress the image according to its size
+					// you can choose any boundary you like
+					let base64Code = "";
+					if(size <= 1) {
+						// the size is less than 1MB
+						base64Code = canvas.toDataURL(type, 0.5);
+					}
+					else {
+						// the size is greater than 1MB
+						base64Code = canvas.toDataURL(type, 0.2);
+					}
+
+					// transfer base64Code to file
+					resolve(DataURLtoFile(base64Code, type, name));
+				};
+			};
+		});
+	}
+
+	function DataURLtoFile(base64Code, type, name) {
+		const array = base64Code.split(',');
+
+		// decode the base64 code
+		const decodeValue = atob(array[1]);
+		
+		let length = decodeValue.length;
+		const u8A = new Uint8Array(length);
+
+		while(length >= 0) {
+			u8A[length] = decodeValue.charCodeAt(length);
+			length = length - 1;
+		}
+
+		return new File([u8A], name, {
+			type: type
+		});
 	}
 
 	function SendRequest(image) {
