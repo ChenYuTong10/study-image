@@ -147,6 +147,20 @@ func merge(w http.ResponseWriter, r *http.Request) {
 		chunk.Close()
 	}
 
+	// insert image info into the database
+	insertSQL := `
+		INSERT INTO slice_upload_image
+		(path)
+		VALUES
+		(?);
+	`
+	_, err = conn.Exec(insertSQL, imageName)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "db fail", http.StatusInternalServerError)
+		return
+	}
+
 	// remove all the chunks
 	defer func() {
 		err = os.RemoveAll(chunkDirPath)
