@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>slice</title>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.26.1/axios.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>Choose an image:</h2>
+		<input
+			type="file"
+			name="me"
+			id="image-input"
+			accept="image/png, image/jpeg"
+		/>
+		<img id="image-display" alt="image" src="">
+	</div>
+</body>
+<script type="text/javascript">
+	const url = "http://localhost:9090/";
+	const input = document.getElementById("image-input");
+	const img = document.getElementById("image-display");
+	// use the random number to simulate the user id
+	const userId = Math.floor(Math.random() * 100);
+
+	input.addEventListener("change", function(e) {
+		// get upload image
+		let image = input.files[0];
+
+		// slice the image
+		const chunkList = SliceImage(image, 2**10 * 10 * 1); // 1MB
+
+		// upload every chunk
+		const taskList = [];
+
+		chunkList.forEach((chunk, index) => {
+			const form = new FormData();
+
+			// `userId` is the an unique symbol to identify the image, you can change another way to ensure the unique.
+			// `index` is the sequence of the sliced chunk
+			form.append("userId", userId)
+			form.append("index", index);
+			form.append("chunk", chunk, "blob");
+
+			const promise = axios.post(`${url}upload`, form, {
+				"Content-Type": "multipart/form-data"
+			});
+
+			taskList.push(promise);
+		});
+
+		// send merge request
+		Promise.all(taskList).then(result => {
+			// get image extension: ".png", ".jpeg" or ".svg"
+			const imageExt = `.${image.type.split("/")[1]}`;
+
+			const form = new FormData();
+			form.append("userId", userId);
+			form.append("imageExt", imageExt);
+			form.append("chunkNum", chunkList.length);
+
+			axios.post(`${url}merge`, form).then(result => {
+				if(result.status === 200) {
+					img.src = `${url}${result.data}`;
+				}
+			});
+
+		}).catch(e => {
+			console.error(e);
+		});
+
+	}, false);
+
+	function SliceImage(image, chunkSize) {
+		const totalSize = image.size;
+
+		// record the start and end slice position
+		let start = 0, end = start + chunkSize;
+
+		// after sliced list
+		const chunkList = [];
+
+		while(start < totalSize) {
+			// class `File` extends the class `Blob`, so it has `slice` method
+			let chunk = image.slice(start, end);
+
+			chunkList.push(chunk);
+
+			start = end;
+			end = start + chunkSize;
+		}
+
+		return chunkList;
+	}
+</script>
+</html>
