@@ -16,7 +16,7 @@
 
 02. breakpoint resume ✅
 
-03. splice upload ⌛
+03. slice upload ⌛
 
 04. second transmit ✅
 
