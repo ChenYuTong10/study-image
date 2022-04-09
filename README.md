@@ -10,13 +10,15 @@
 
 04. `second` shows how to realize the second transmit image.
 
+05. `slice` shows how to slice the image, upload separately and merge finally.
+
 ## Task
 
 01. two ways to store the image ✅
 
 02. breakpoint resume ✅
 
-03. slice upload ⌛
+03. slice upload ✅
 
 04. second transmit ✅
 
